@@ -72,18 +72,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Aurora Music" },
+      { name: "description", content: "A minimal, beautiful web music player." },
+      { name: "author", content: "Aurora" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
-      { name: "twitter:description", content: "Lovable Generated Project" },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2a392f17-2adf-4ae8-842e-a1f2eca8d6b5/id-preview-30e55c07--b49c1935-243a-4045-bd8f-8e00fcaa0888.lovable.app-1779779490878.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2a392f17-2adf-4ae8-842e-a1f2eca8d6b5/id-preview-30e55c07--b49c1935-243a-4045-bd8f-8e00fcaa0888.lovable.app-1779779490878.png" },
     ],
     links: [
       {

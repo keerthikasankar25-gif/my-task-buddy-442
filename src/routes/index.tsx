@@ -1,312 +1,144 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
-import {
-  Play,
-  Pause,
-  SkipBack,
-  SkipForward,
-  Volume2,
-  VolumeX,
-  Music2,
-  ListMusic,
-} from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Play, Headphones, Volume2, ListMusic, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Aurora — Music Player" },
+      { title: "Aurora — Your Music, Reimagined" },
       {
         name: "description",
         content:
-          "A minimal, beautiful web music player with playlist, autoplay, progress and volume controls.",
+          "Aurora is a beautiful web music player with playlist support, autoplay, progress tracking, and volume controls. Listen now.",
+      },
+      { property: "og:title", content: "Aurora — Your Music, Reimagined" },
+      {
+        property: "og:description",
+        content:
+          "Aurora is a beautiful web music player with playlist support, autoplay, progress tracking, and volume controls. Listen now.",
       },
     ],
   }),
-  component: Player,
+  component: HomePage,
 });
 
-type Track = {
-  id: string;
-  title: string;
-  artist: string;
-  src: string;
-  cover: string;
-};
-
-const PLAYLIST: Track[] = [
-  {
-    id: "1",
-    title: "SoundHelix Song 1",
-    artist: "T. Schürger",
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    cover:
-      "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&q=80",
-  },
-  {
-    id: "2",
-    title: "SoundHelix Song 2",
-    artist: "T. Schürger",
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-    cover:
-      "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&q=80",
-  },
-  {
-    id: "3",
-    title: "SoundHelix Song 5",
-    artist: "T. Schürger",
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
-    cover:
-      "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&q=80",
-  },
-  {
-    id: "4",
-    title: "SoundHelix Song 8",
-    artist: "T. Schürger",
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
-    cover:
-      "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&q=80",
-  },
-];
-
-const fmt = (s: number) => {
-  if (!isFinite(s) || s < 0) return "0:00";
-  const m = Math.floor(s / 60);
-  const r = Math.floor(s % 60);
-  return `${m}:${r.toString().padStart(2, "0")}`;
-};
-
-function Player() {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [index, setIndex] = useState(0);
-  const [playing, setPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(0.8);
-  const [muted, setMuted] = useState(false);
-  const [autoplay, setAutoplay] = useState(true);
-  const [showList, setShowList] = useState(true);
-
-  const track = PLAYLIST[index];
-
-  useEffect(() => {
-    const a = audioRef.current;
-    if (!a) return;
-    a.volume = muted ? 0 : volume;
-  }, [volume, muted]);
-
-  useEffect(() => {
-    const a = audioRef.current;
-    if (!a) return;
-    if (playing) a.play().catch(() => setPlaying(false));
-    else a.pause();
-  }, [playing, index]);
-
-  const next = () => setIndex((i) => (i + 1) % PLAYLIST.length);
-  const prev = () => setIndex((i) => (i - 1 + PLAYLIST.length) % PLAYLIST.length);
-
-  const select = (i: number) => {
-    setIndex(i);
-    setPlaying(true);
-  };
-
-  const onTime = () => {
-    const a = audioRef.current;
-    if (a) setProgress(a.currentTime);
-  };
-  const onLoaded = () => {
-    const a = audioRef.current;
-    if (a) setDuration(a.duration);
-  };
-  const onEnded = () => {
-    if (autoplay) {
-      next();
-      setPlaying(true);
-    } else {
-      setPlaying(false);
-    }
-  };
-
-  const seek = (v: number) => {
-    const a = audioRef.current;
-    if (!a) return;
-    a.currentTime = v;
-    setProgress(v);
-  };
-
-  const pct = duration ? (progress / duration) * 100 : 0;
-
+function HomePage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] flex items-center justify-center p-4">
-      <audio
-        ref={audioRef}
-        src={track.src}
-        onTimeUpdate={onTime}
-        onLoadedMetadata={onLoaded}
-        onEnded={onEnded}
-        preload="metadata"
-      />
+    <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] text-white">
+      {/* Hero */}
+      <section className="relative flex flex-col items-center justify-center px-6 py-24 md:py-36 text-center">
+        <div className="absolute inset-0 opacity-20 pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 h-64 w-64 rounded-full bg-fuchsia-500 blur-[120px]" />
+          <div className="absolute bottom-1/4 right-1/4 h-64 w-64 rounded-full bg-violet-500 blur-[120px]" />
+        </div>
 
-      <div className="w-full max-w-md">
-        <div className="rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden">
-          {/* Cover */}
-          <div className="relative aspect-square overflow-hidden">
-            <img
-              src={track.cover}
-              alt={track.title}
-              className={`h-full w-full object-cover transition-transform duration-[8000ms] ${playing ? "scale-110" : "scale-100"}`}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-            <div className="absolute top-4 left-4 flex items-center gap-2 text-white/80 text-xs uppercase tracking-[0.2em]">
-              <Music2 className="h-3.5 w-3.5" />
-              Now Playing
-            </div>
-            <div className="absolute bottom-5 left-5 right-5">
-              <h1 className="text-2xl font-bold text-white truncate">{track.title}</h1>
-              <p className="text-sm text-white/70">{track.artist}</p>
-            </div>
+        <div className="relative z-10 max-w-3xl mx-auto space-y-8">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm backdrop-blur-md">
+            <Headphones className="h-4 w-4 text-fuchsia-300" />
+            <span>Free web music player</span>
           </div>
 
-          {/* Controls */}
-          <div className="p-6 space-y-5">
-            {/* Progress */}
-            <div>
-              <div className="relative h-1.5 rounded-full bg-white/10 overflow-hidden">
-                <div
-                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-fuchsia-400 to-violet-400 rounded-full"
-                  style={{ width: `${pct}%` }}
-                />
-                <input
-                  type="range"
-                  min={0}
-                  max={duration || 0}
-                  step={0.01}
-                  value={progress}
-                  onChange={(e) => seek(parseFloat(e.target.value))}
-                  className="absolute inset-0 w-full opacity-0 cursor-pointer"
-                />
-              </div>
-              <div className="mt-2 flex justify-between text-xs text-white/60 tabular-nums">
-                <span>{fmt(progress)}</span>
-                <span>{fmt(duration)}</span>
-              </div>
-            </div>
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-tight">
+            Your Music,
+            <br />
+            <span className="bg-gradient-to-r from-fuchsia-300 to-violet-300 bg-clip-text text-transparent">
+              Reimagined
+            </span>
+          </h1>
 
-            {/* Buttons */}
-            <div className="flex items-center justify-center gap-6">
-              <button
-                onClick={prev}
-                className="text-white/80 hover:text-white transition"
-                aria-label="Previous"
-              >
-                <SkipBack className="h-6 w-6" fill="currentColor" />
-              </button>
-              <button
-                onClick={() => setPlaying((p) => !p)}
-                className="h-14 w-14 rounded-full bg-white text-[#302b63] flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition"
-                aria-label={playing ? "Pause" : "Play"}
-              >
-                {playing ? (
-                  <Pause className="h-6 w-6" fill="currentColor" />
-                ) : (
-                  <Play className="h-6 w-6 ml-0.5" fill="currentColor" />
-                )}
-              </button>
-              <button
-                onClick={next}
-                className="text-white/80 hover:text-white transition"
-                aria-label="Next"
-              >
-                <SkipForward className="h-6 w-6" fill="currentColor" />
-              </button>
-            </div>
+          <p className="text-lg md:text-xl text-white/70 max-w-xl mx-auto">
+            Aurora is a minimal, beautiful music player that runs right in your browser.
+            Play, pause, seek, and build your playlist — no downloads required.
+          </p>
 
-            {/* Volume + options */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setMuted((m) => !m)}
-                className="text-white/70 hover:text-white"
-                aria-label="Mute"
-              >
-                {muted || volume === 0 ? (
-                  <VolumeX className="h-4 w-4" />
-                ) : (
-                  <Volume2 className="h-4 w-4" />
-                )}
-              </button>
-              <input
-                type="range"
-                min={0}
-                max={1}
-                step={0.01}
-                value={muted ? 0 : volume}
-                onChange={(e) => {
-                  setVolume(parseFloat(e.target.value));
-                  setMuted(false);
-                }}
-                className="flex-1 accent-fuchsia-400"
-              />
-              <label className="flex items-center gap-1.5 text-xs text-white/70 select-none cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={autoplay}
-                  onChange={(e) => setAutoplay(e.target.checked)}
-                  className="accent-fuchsia-400"
-                />
-                Autoplay
-              </label>
-            </div>
-          </div>
-
-          {/* Playlist */}
-          <div className="border-t border-white/10">
-            <button
-              onClick={() => setShowList((s) => !s)}
-              className="w-full px-6 py-3 flex items-center justify-between text-white/80 hover:text-white text-sm"
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <Link
+              to="/player"
+              className="inline-flex items-center gap-2 rounded-full bg-white text-[#302b63] px-8 py-3.5 font-semibold shadow-lg hover:scale-105 active:scale-95 transition"
             >
-              <span className="flex items-center gap-2">
-                <ListMusic className="h-4 w-4" /> Playlist ({PLAYLIST.length})
-              </span>
-              <span className="text-xs text-white/50">{showList ? "Hide" : "Show"}</span>
-            </button>
-            {showList && (
-              <ul className="max-h-64 overflow-y-auto pb-2">
-                {PLAYLIST.map((t, i) => {
-                  const active = i === index;
-                  return (
-                    <li key={t.id}>
-                      <button
-                        onClick={() => select(i)}
-                        className={`w-full flex items-center gap-3 px-6 py-2.5 text-left transition ${
-                          active ? "bg-white/10" : "hover:bg-white/5"
-                        }`}
-                      >
-                        <div className="h-9 w-9 rounded overflow-hidden shrink-0">
-                          <img src={t.cover} alt="" className="h-full w-full object-cover" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p
-                            className={`text-sm truncate ${active ? "text-fuchsia-300" : "text-white"}`}
-                          >
-                            {t.title}
-                          </p>
-                          <p className="text-xs text-white/50 truncate">{t.artist}</p>
-                        </div>
-                        {active && playing && (
-                          <div className="flex gap-0.5 items-end h-4">
-                            <span className="w-0.5 bg-fuchsia-400 animate-pulse h-2" />
-                            <span className="w-0.5 bg-fuchsia-400 animate-pulse h-4" />
-                            <span className="w-0.5 bg-fuchsia-400 animate-pulse h-3" />
-                          </div>
-                        )}
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
+              <Play className="h-5 w-5" fill="currentColor" />
+              Launch Player
+            </Link>
+            <a
+              href="#features"
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-8 py-3.5 font-medium backdrop-blur-sm hover:bg-white/10 transition"
+            >
+              Explore Features
+              <ArrowRight className="h-4 w-4" />
+            </a>
           </div>
         </div>
-      </div>
-    </main>
+      </section>
+
+      {/* Features */}
+      <section id="features" className="px-6 py-20">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
+            Everything you need
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm hover:bg-white/10 transition">
+              <div className="mb-4 inline-flex items-center justify-center h-12 w-12 rounded-xl bg-fuchsia-500/20 text-fuchsia-300">
+                <Play className="h-6 w-6" fill="currentColor" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Full Playback Control</h3>
+              <p className="text-white/60 leading-relaxed">
+                Play, pause, skip forward or backward, and seek anywhere in the track with a smooth progress bar.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm hover:bg-white/10 transition">
+              <div className="mb-4 inline-flex items-center justify-center h-12 w-12 rounded-xl bg-violet-500/20 text-violet-300">
+                <Volume2 className="h-6 w-6" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Volume & Mute</h3>
+              <p className="text-white/60 leading-relaxed">
+                Fine-tune your listening experience with a precise volume slider and one-click mute toggle.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm hover:bg-white/10 transition">
+              <div className="mb-4 inline-flex items-center justify-center h-12 w-12 rounded-xl bg-emerald-500/20 text-emerald-300">
+                <ListMusic className="h-6 w-6" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Playlist & Autoplay</h3>
+              <p className="text-white/60 leading-relaxed">
+                Browse your playlist, jump to any track instantly, and enable autoplay for uninterrupted listening.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Preview / CTA */}
+      <section className="px-6 py-20">
+        <div className="max-w-4xl mx-auto rounded-3xl border border-white/10 bg-white/5 p-10 md:p-16 text-center backdrop-blur-sm">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Ready to listen?
+          </h2>
+          <p className="text-white/70 text-lg max-w-xl mx-auto mb-8">
+            Jump into the player and start streaming your favorite SoundHelix tracks right now.
+          </p>
+          <Link
+            to="/player"
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-fuchsia-500 to-violet-500 text-white px-10 py-4 font-semibold shadow-lg hover:scale-105 active:scale-95 transition"
+          >
+            <Play className="h-5 w-5" fill="currentColor" />
+            Open Music Player
+          </Link>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-white/10 px-6 py-10">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-white/50">
+          <p> Aurora Music Player</p>
+          <div className="flex items-center gap-6">
+            <Link to="/" className="hover:text-white transition">Home</Link>
+            <Link to="/player" className="hover:text-white transition">Player</Link>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
 }
